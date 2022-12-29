@@ -5,6 +5,8 @@ import {getReefExtension} from "./extensionUtil";
 import {Signer} from "@reef-defi/evm-provider";
 import {isMainnet} from "@reef-defi/evm-provider/utils";
 import {ReefSignerResponse, ReefSignerStatus, ReefInjected } from "@reef-defi/extension-inject/types";
+import {initProvider} from "./providerUtil";
+import {BigNumber} from "ethers";
 
 polyfill;
 
@@ -32,12 +34,18 @@ document.addEventListener('toggle-contract-value', async (evt:any) => {
 
 window.addEventListener('load', async () => {
     try {
-        const extension = await getReefExtension('Minimal DApp Example') as ReefInjected;
+        //const extension = await getReefExtension('Minimal DApp Example') as ReefInjected;
 
         // we can also get provider and signer
         // const prov = await extension.reefProvider.getNetworkProvider();
         // const signer = await extension.reefSigner.getSelectedSigner();
         // console.log("provider=",await prov.api.genesisHash.toString(), ' signer=',signer);
+
+        const prov = await initProvider();
+        prov.api.query.system.account('5EnY9eFwEDcEJ62dJWrTXhTucJ4pzGym4WZ2xcDKiT3eJecP', ({ nonce, data: balance }) => {
+            console.log('BALANCE =',BigNumber.from(balance.free.toString()));
+        });
+        return;
 
         extension.reefSigner.subscribeSelectedSigner(async (sig:ReefSignerResponse) => {
             console.log("signer cb =",sig);
